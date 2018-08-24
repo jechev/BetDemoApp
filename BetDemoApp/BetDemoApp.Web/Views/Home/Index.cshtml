@@ -1,0 +1,132 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+<h2>
+    Bet Demo App
+</h2>
+<button type="button" class="btn btn-primary" id="hide-bets">Hide Bets</button>
+<button type="button" class="btn btn-primary" id="show-bets">Show Bets</button>
+<div id="matches-div" class="span 12">
+</div>
+    @section scripts
+{
+        @Scripts.Render("~/Scripts/jquery.signalR-2.3.0.min.js")
+        <script src="~/signalr/hubs"></script>
+        <script>
+            if (!String.prototype.supplant) {
+                String.prototype.supplant = function (o) {
+                    return this.replace(/{([^{}]*)}/g,
+                        function (a, b) {
+                            var r = o[b];
+                            return typeof r === 'string' || typeof r === 'number' ? r : a;
+                        }
+                    );
+                };
+            }
+
+            $(function () {
+                $.connection.hub.start().then(init)
+                const hub = $.connection.matchHub
+                let $container = $('#matches-div'),
+                    $showBetsBtn = $('#show-bets'),
+                    $hideBetsBtn = $('#hide-bets'),
+                    matchTemplate = '<div id="match-{Id}" class="alert alert-secondary""><strong>Game: {Game} - Event: {EventName}</strong><p>{Name} {StartDate} {MatchType}</p><ul class="list-inline bets"></ul></div>',
+                    betTemplate = '<li id="bet-{Id}" class="list-inline-item"><strong>{Name}</strong><ul class="odds-ul"></ul></li>',
+                    oddTemplate = '<a href="#" class="list-group-item list-group-item-action list-inline-item" id="odd-{Id}"><strong>{Name}</strong>  - {Value}</a>'
+
+                    $showBetsBtn.click(function () {
+                        $(".bets").show()
+                    })
+
+                    $hideBetsBtn.click(function () {
+                        $(".bets").hide()
+                    })
+
+                function init() {
+                    hub.server.getAll().done(function (matches) {
+                        console.log("Connected : ", matches)
+                        $.each(matches, function () {
+                            var match = this
+                            updateMatch(match)
+                        })
+                    })
+                }
+
+                function updateMatch(match) {
+                    let html = matchTemplate.supplant(match)
+                    let element = $("#match-" + match.Id)
+                    if (element.length) {
+                        element.replaceWith(html)
+                    } else {
+                        $container.append(matchTemplate.supplant(match))
+                    }
+                   addBets(match)
+                }
+
+                function addBets(match) {
+                    let elementBets = $("#match-" + match.Id + " ul")
+                    let bets = match['Bets']
+                    $.each(bets, function () {
+                        let bet = this
+                        elementBets.append(betTemplate.supplant(bet))
+                        addOdds(bet)
+                    })
+                }
+
+                function addOdds(bet) {
+                    var elementOdds = $("#bet-" + bet.Id + " ul")
+                    var odds = bet['Odds']
+                    $.each(odds, function () {
+                        let odd = this
+                        elementOdds.append(oddTemplate.supplant(odd))
+                    })
+                }
+
+                hub.client.updateMatches = function (matches) {
+                    if (matches.length > 0) {
+                        console.log("Matches Update", matches)
+                    }
+                    $.each(matches, function () {
+                        let match = this
+                        updateMatch(match)
+                        let element = $("#match-" + match.Id)
+                        element.addClass("text-warning")
+                        setTimeout(function () { element.removeClass("text-warning"); }, 3000, element);
+                    })
+
+                }
+
+                hub.client.addMatches = function (matches) {
+                    if (matches.length > 0) {
+                        console.log("Matches Add", matches)
+                    }
+                    
+                    $.each(matches, function () {
+                        let match = this
+                        updateMatch(match)
+                        let element = $("#match-" + match.Id)
+                        element.addClass("text-success")
+                        setTimeout(function () { element.removeClass("text-success"); }, 3000, element);
+                    })
+ 
+                }
+
+                hub.client.removeMatches = function (matchIds) {
+                    if (matchIds > 0) {
+                        console.log("Matches Update", matches)
+                    }
+                    $.each(matchIds, function () {
+                        let id = this
+                        let element = $("#match-" + id)
+                        element.addClass("text-danger")
+                        element.fadeOut("slow", function () {
+                            if (element.length) {
+                                element.remove()
+                            }
+                        })
+                    })
+                }
+
+            })
+        </script>
+    }
