@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Bet Page";
 }
 <h2>
     Bet Demo App
@@ -91,7 +91,7 @@
                         updateMatch(match)
                         let element = $("#match-" + match.Id)
                         element.addClass("text-warning")
-                        setTimeout(function () { element.removeClass("text-warning"); }, 3000, element);
+                        setTimeout(function () { element.removeClass("text-warning") }, 3000, element)
                     })
 
                 }
@@ -106,7 +106,7 @@
                         updateMatch(match)
                         let element = $("#match-" + match.Id)
                         element.addClass("text-success")
-                        setTimeout(function () { element.removeClass("text-success"); }, 3000, element);
+                        setTimeout(function () { element.removeClass("text-success") }, 3000, element)
                     })
  
                 }
