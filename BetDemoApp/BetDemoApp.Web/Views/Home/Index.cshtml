@@ -30,7 +30,7 @@
                 let $container = $('#matches-div'),
                     $showBetsBtn = $('#show-bets'),
                     $hideBetsBtn = $('#hide-bets'),
-                    matchTemplate = '<div id="match-{Id}" class="alert alert-secondary""><strong>Game: {Game} - Event: {EventName}</strong><p>{Name} {StartDate} {MatchType}</p><ul class="list-inline bets"></ul></div>',
+                    matchTemplate = '<div id="match-{Id}" class="alert alert-secondary""><strong>Game: {Game} - Event: {EventName}</strong><p><strong>{Name}</strong><br/>{StartDate},  Type:<strong>{MatchType}</strong></p><ul class="list-inline bets"></ul></div>',
                     betTemplate = '<li id="bet-{Id}" class="list-inline-item"><strong>{Name}</strong><ul class="odds-ul"></ul></li>',
                     oddTemplate = '<a href="#" class="list-group-item list-group-item-action list-inline-item" id="odd-{Id}"><strong>{Name}</strong>  - {Value}</a>'
 
